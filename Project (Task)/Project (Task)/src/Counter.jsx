@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './Counter.css'; // We'll create this CSS file next
+import './Counter.css'; 
 
 const Counter = () => {
   const [count, setCount] = useState(0);
@@ -11,8 +11,14 @@ const Counter = () => {
   };
 
   const decrement = () => {
-    setCount(prev => prev - 1);
-    animate();
+    setCount(prev => {
+      if (prev > 0) {
+        animate(); 
+        return prev - 1;
+      } else {
+        return prev; 
+      }
+    });  
   };
 
   const reset = () => {
