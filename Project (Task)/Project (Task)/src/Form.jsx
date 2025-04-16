@@ -20,7 +20,7 @@ const EnhancedForm = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
     if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
     if (!formData.email.trim()) {
@@ -35,7 +35,7 @@ const EnhancedForm = () => {
     if (!formData.state.trim()) newErrors.state = 'State is required';
     if (!formData.zipCode.trim()) newErrors.zipCode = 'Zip code is required';
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -46,7 +46,7 @@ const EnhancedForm = () => {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
@@ -55,19 +55,19 @@ const EnhancedForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate API call
+
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       console.log('Form submitted successfully:', formData);
       setSubmitSuccess(true);
-      
-      // Reset form after successful submission
+
+
       setTimeout(() => {
         setFormData({
           firstName: '',
@@ -104,7 +104,7 @@ const EnhancedForm = () => {
       <h2>User Information Form</h2>
       <form onSubmit={handleSubmit} noValidate>
         <div className="form-grid">
-          <FormInput 
+          <FormInput
             label="First Name"
             name="firstName"
             type="text"
@@ -113,8 +113,8 @@ const EnhancedForm = () => {
             error={errors.firstName}
             required
           />
-          
-          <FormInput 
+
+          <FormInput
             label="Last Name"
             name="lastName"
             type="text"
@@ -123,8 +123,8 @@ const EnhancedForm = () => {
             error={errors.lastName}
             required
           />
-          
-          <FormInput 
+
+          <FormInput
             label="Email"
             name="email"
             type="email"
@@ -133,8 +133,8 @@ const EnhancedForm = () => {
             error={errors.email}
             required
           />
-          
-          <FormInput 
+
+          <FormInput
             label="Password"
             name="password"
             type="password"
@@ -143,8 +143,8 @@ const EnhancedForm = () => {
             error={errors.password}
             required
           />
-          
-          <FormInput 
+
+          <FormInput
             label="Address"
             name="address"
             type="text"
@@ -153,9 +153,9 @@ const EnhancedForm = () => {
             error={errors.address}
             required
           />
-          
+
           <div className="form-group address-group">
-            <FormInput 
+            <FormInput
               label="City"
               name="city"
               type="text"
@@ -164,8 +164,8 @@ const EnhancedForm = () => {
               error={errors.city}
               required
             />
-            
-            <FormInput 
+
+            <FormInput
               label="State"
               name="state"
               type="text"
@@ -174,8 +174,8 @@ const EnhancedForm = () => {
               error={errors.state}
               required
             />
-            
-            <FormInput 
+
+            <FormInput
               label="Zip Code"
               name="zipCode"
               type="text"
@@ -185,27 +185,27 @@ const EnhancedForm = () => {
               required
             />
           </div>
-          
-          <FormInput 
+
+          <FormInput
             label="Phone Number"
             name="phone"
-            type="tel"
+            type="number"
             value={formData.phone}
             onChange={handleChange}
             error={errors.phone}
             required
           />
-          
-          <FormTextArea 
+
+          <FormTextArea
             label="Comments"
             name="comments"
             value={formData.comments}
             onChange={handleChange}
           />
         </div>
-        
-        <button 
-          type="submit" 
+
+        <button
+          type="submit"
           className="submit-btn"
           disabled={isSubmitting}
         >
