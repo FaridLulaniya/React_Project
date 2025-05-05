@@ -151,7 +151,7 @@ const RestaurantList = () => {
                     <td className="py-4 px-6 whitespace-nowrap">
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${restaurant.rating >= 5 ? 'bg-green-100 text-green-800' :
                         restaurant.rating >= 3 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                          'bg-red-100 text-red-800'  
                         }`}>
                         {restaurant.rating}
                       </span>

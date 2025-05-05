@@ -1,94 +1,65 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const EnhancedForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    phone: '',
-    comments: ''
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitSuccess, setSubmitSuccess] = React.useState(false);
+
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required'),
+    email: Yup.string()
+      .email('Email is invalid')
+      .required('Email is required'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .required('Password is required'),
+    address: Yup.string().required('Address is required'),
+    city: Yup.string().required('City is required'),
+    state: Yup.string().required('State is required'),
+    zipCode: Yup.string().required('Zip code is required'),
+    phone: Yup.string().required('Phone is required'),
+    comments: Yup.string()
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+  const formik = useFormik({
+    initialValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      phone: '',
+      comments: ''
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      setIsSubmitting(true);
+      
+      // Simulate API call with promise
+      new Promise((resolve) => {
+        setTimeout(resolve, 1500);
+      })
+      .then(() => {
+        console.log('Form submitted successfully:', values);
+        setSubmitSuccess(true);
+        setTimeout(() => {
+          formik.resetForm();
+          setSubmitSuccess(false);
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error('Submission error:', error);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
     }
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.city.trim()) newErrors.city = 'City is required';
-    if (!formData.state.trim()) newErrors.state = 'State is required';
-    if (!formData.zipCode.trim()) newErrors.zipCode = 'Zip code is required';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
-    try {
-
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      console.log('Form submitted successfully:', formData);
-      setSubmitSuccess(true);
-
-
-      setTimeout(() => {
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          address: '',
-          city: '',
-          state: '',
-          zipCode: '',
-          phone: '',
-          comments: ''
-        });
-        setSubmitSuccess(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Submission error:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  });
 
   if (submitSuccess) {
     return (
@@ -102,15 +73,16 @@ const EnhancedForm = () => {
   return (
     <div className="form-container">
       <h2>User Information Form</h2>
-      <form onSubmit={handleSubmit} noValidate>
+      <form onSubmit={formik.handleSubmit} noValidate>
         <div className="form-grid">
           <FormInput
             label="First Name"
             name="firstName"
             type="text"
-            value={formData.firstName}
-            onChange={handleChange}
-            error={errors.firstName}
+            value={formik.values.firstName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.firstName && formik.errors.firstName}
             required
           />
 
@@ -118,9 +90,10 @@ const EnhancedForm = () => {
             label="Last Name"
             name="lastName"
             type="text"
-            value={formData.lastName}
-            onChange={handleChange}
-            error={errors.lastName}
+            value={formik.values.lastName}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.lastName && formik.errors.lastName}
             required
           />
 
@@ -128,9 +101,10 @@ const EnhancedForm = () => {
             label="Email"
             name="email"
             type="email"
-            value={formData.email}
-            onChange={handleChange}
-            error={errors.email}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.email && formik.errors.email}
             required
           />
 
@@ -138,9 +112,10 @@ const EnhancedForm = () => {
             label="Password"
             name="password"
             type="password"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
+            value={formik.values.password}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.password && formik.errors.password}
             required
           />
 
@@ -148,9 +123,10 @@ const EnhancedForm = () => {
             label="Address"
             name="address"
             type="text"
-            value={formData.address}
-            onChange={handleChange}
-            error={errors.address}
+            value={formik.values.address}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.address && formik.errors.address}
             required
           />
 
@@ -159,9 +135,10 @@ const EnhancedForm = () => {
               label="City"
               name="city"
               type="text"
-              value={formData.city}
-              onChange={handleChange}
-              error={errors.city}
+              value={formik.values.city}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.city && formik.errors.city}
               required
             />
 
@@ -169,9 +146,10 @@ const EnhancedForm = () => {
               label="State"
               name="state"
               type="text"
-              value={formData.state}
-              onChange={handleChange}
-              error={errors.state}
+              value={formik.values.state}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.state && formik.errors.state}
               required
             />
 
@@ -179,35 +157,36 @@ const EnhancedForm = () => {
               label="Zip Code"
               name="zipCode"
               type="text"
-              value={formData.zipCode}
-              onChange={handleChange}
-              error={errors.zipCode}
+              value={formik.values.zipCode}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.zipCode && formik.errors.zipCode}
               required
             />
           </div>
 
-          <FormInput
-            label="Phone Number"
-            name="phone"
-            type="number"
-            value={formData.phone}
-            onChange={handleChange}
-            error={errors.phone}
-            required
+          <FormInput 
+            label="Phone Number" 
+            name="phone" 
+            type="text" 
+            value={formik.values.phone} 
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.phone && formik.errors.phone}
+            required 
           />
 
-          <FormTextArea
-            label="Comments"
+          <FormTextArea 
+            label="Comments" 
             name="comments"
-            value={formData.comments}
-            onChange={handleChange}
+            value={formik.values.comments} 
+            onChange={formik.handleChange}
           />
         </div>
-
-        <button
-          type="submit"
-          className="submit-btn"
-          disabled={isSubmitting}
+        <button 
+          type="submit" 
+          className="submit-btn" 
+          disabled={isSubmitting || !formik.isValid}
         >
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
@@ -216,7 +195,7 @@ const EnhancedForm = () => {
   );
 };
 
-const FormInput = ({ label, name, type, value, onChange, error, required = false }) => {
+const FormInput = ({ label, name, type, value, onChange, onBlur, error, required = false }) => {
   return (
     <div className={`form-group ${error ? 'has-error' : ''}`}>
       <label htmlFor={name}>
@@ -229,6 +208,7 @@ const FormInput = ({ label, name, type, value, onChange, error, required = false
         type={type}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         required={required}
         className="form-input"
       />
